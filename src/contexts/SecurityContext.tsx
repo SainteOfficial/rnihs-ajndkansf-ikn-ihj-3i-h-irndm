@@ -89,8 +89,9 @@ export const SecurityProvider: React.FC<{ children: ReactNode }> = ({ children }
     // Erweiterte CSP-Überprüfung - prüft, ob die CSP korrekt geladen wurde
     const checkCSP = () => {
       const cspMeta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+      // CSP can be applied via HTTP headers, so not finding a meta tag isn't necessarily an issue
       if (!cspMeta) {
-        console.warn('Security Warning: No CSP meta tag found');
+        console.log('Info: No CSP meta tag found, this is expected if using HTTP headers for CSP');
         return;
       }
       
