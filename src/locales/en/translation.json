@@ -1,0 +1,161 @@
+{
+  "navigation": {
+    "home": "Home",
+    "services": "Services",
+    "solutions": "Industry Solutions",
+    "demo": "Demo",
+    "about": "About Us",
+    "contact": "Contact",
+    "testimonials": "Testimonials"
+  },
+  "hero": {
+    "title": "Intelligent Communication for Your Business",
+    "subtitle": "AI-powered chatbots and voicebots that revolutionize your customer communication",
+    "ctaButton": "Start Demo",
+    "secondaryButton": "Learn More"
+  },
+  "services": {
+    "title": "Our Services",
+    "subtitle": "Tailored AI solutions for your communication needs",
+    "chatbots": {
+      "title": "Chatbots",
+      "description": "Intelligent text assistants for your website and social media channels"
+    },
+    "voicebots": {
+      "title": "Voicebots",
+      "description": "Natural-sounding voice assistants for telephony and voice applications"
+    },
+    "crmIntegration": {
+      "title": "CRM Integration",
+      "description": "Seamless connection to your existing CRM system"
+    },
+    "appointments": {
+      "title": "Appointment Scheduling",
+      "description": "Automated appointment booking and management"
+    },
+    "multilingual": {
+      "title": "Multilingual Support",
+      "description": "Support for over 20 languages for international communication"
+    },
+    "dataAnalysis": {
+      "title": "Data Analysis",
+      "description": "Detailed insights into customer interactions and needs"
+    },
+    "apiIntegration": {
+      "title": "API Integration",
+      "description": "Flexible integration into your existing IT infrastructure"
+    }
+  },
+  "solutions": {
+    "title": "Industry Solutions",
+    "subtitle": "Tailored AI solutions for various industries",
+    "automotive": {
+      "title": "Automotive",
+      "description": "Automate appointment scheduling, vehicle configuration and service requests"
+    },
+    "ecommerce": {
+      "title": "E-Commerce",
+      "description": "Easily manage product advice, order status, and returns"
+    },
+    "craft": {
+      "title": "Craft Businesses",
+      "description": "Intelligently handle scheduling, quotation creation, and customer inquiries"
+    },
+    "customerService": {
+      "title": "Customer Service",
+      "description": "24/7 support, ticket prioritization, and answers to frequently asked questions"
+    }
+  },
+  "demo": {
+    "title": "Test Our AI Assistant",
+    "subtitle": "Experience the power of our AI solutions",
+    "inputPlaceholder": "Ask a question...",
+    "sendButton": "Send",
+    "voiceButton": "Voice Output",
+    "resetButton": "Reset",
+    "requestsLeft": "Remaining requests today: {{count}}",
+    "requestLimit": "You have reached your daily limit. Contact us for a full demo."
+  },
+  "about": {
+    "title": "About Us",
+    "subtitle": "Our mission is to revolutionize communication",
+    "mission": {
+      "title": "Mission",
+      "description": "We develop intelligent AI solutions that help businesses optimize and automate their customer communication."
+    },
+    "vision": {
+      "title": "Vision",
+      "description": "A world where communication between businesses and customers is seamless, efficient, and always available."
+    },
+    "team": {
+      "title": "Our Team",
+      "description": "A dedicated team of AI experts, developers, and communication specialists."
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Get in touch with us",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "company": "Company",
+      "message": "Message",
+      "submit": "Submit",
+      "success": "Thank you for your message. We will get back to you shortly.",
+      "error": "An error occurred. Please try again later."
+    },
+    "whatsapp": "WhatsApp",
+    "calendly": "Book an Appointment"
+  },
+  "testimonials": {
+    "title": "Testimonials",
+    "subtitle": "What our customers say about us",
+    "testimonial1": {
+      "name": "Max Mustermann",
+      "company": "Autohaus Mustermann GmbH",
+      "text": "Since we started using KI-Helpbot, we've had 40% more appointment requests and our staff saves valuable time on routine inquiries."
+    },
+    "testimonial2": {
+      "name": "Laura Schmidt",
+      "company": "Online Shop ModeWelt",
+      "text": "The chatbot answers questions about order status and returns 24/7 and has significantly improved our customer satisfaction."
+    },
+    "testimonial3": {
+      "name": "Thomas Weber",
+      "company": "Elektro Weber",
+      "text": "Thanks to the AI assistant, we can plan appointments more efficiently and have fewer administrative tasks. A real work relief!"
+    }
+  },
+  "footer": {
+    "company": "© 2025 KI-Helpbot GmbH",
+    "privacy": "Privacy Policy",
+    "imprint": "Imprint",
+    "terms": "Terms & Conditions"
+  },
+  "cookieConsent": {
+    "message": "This website uses cookies to provide you with the best possible experience. For more information, please see our privacy policy.",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you are looking for does not exist.",
+    "button": "Back to Home"
+  },
+  "chat": {
+    "greeting": "Hello! I'm your AI assistant. How can I help you?",
+    "placeholder": "Ask your question...",
+    "sending": "Sending...",
+    "error": "An error occurred. Please try again later."
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "language": {
+    "de": "German",
+    "en": "English"
+  }
+}

@@ -1,0 +1,161 @@
+{
+  "navigation": {
+    "home": "Startseite",
+    "services": "Leistungen",
+    "solutions": "Branchenlösungen",
+    "demo": "Demo",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "testimonials": "Kundenmeinungen"
+  },
+  "hero": {
+    "title": "Intelligente Kommunikation für Ihr Unternehmen",
+    "subtitle": "KI-gestützte Chatbots und Voicebots, die Ihre Kundenkommunikation revolutionieren",
+    "ctaButton": "Demo starten",
+    "secondaryButton": "Mehr erfahren"
+  },
+  "services": {
+    "title": "Unsere Leistungen",
+    "subtitle": "Maßgeschneiderte KI-Lösungen für Ihre Kommunikationsanforderungen",
+    "chatbots": {
+      "title": "Chatbots",
+      "description": "Intelligente Textassistenten für Ihre Website und Social-Media-Kanäle"
+    },
+    "voicebots": {
+      "title": "Voicebots",
+      "description": "Natürlich klingende Sprachassistenten für Telefonie und Sprachanwendungen"
+    },
+    "crmIntegration": {
+      "title": "CRM-Integration",
+      "description": "Nahtlose Anbindung an Ihr bestehendes CRM-System"
+    },
+    "appointments": {
+      "title": "Terminvereinbarung",
+      "description": "Automatisierte Terminbuchung und -verwaltung"
+    },
+    "multilingual": {
+      "title": "Mehrsprachigkeit",
+      "description": "Unterstützung für über 20 Sprachen für internationale Kommunikation"
+    },
+    "dataAnalysis": {
+      "title": "Datenanalyse",
+      "description": "Detaillierte Einblicke in Kundeninteraktionen und -bedürfnisse"
+    },
+    "apiIntegration": {
+      "title": "API-Anbindung",
+      "description": "Flexible Integration in Ihre bestehende IT-Infrastruktur"
+    }
+  },
+  "solutions": {
+    "title": "Branchenlösungen",
+    "subtitle": "Maßgeschneiderte KI-Lösungen für verschiedene Branchen",
+    "automotive": {
+      "title": "Autohaus",
+      "description": "Terminvereinbarungen, Fahrzeugkonfiguration und Service-Anfragen automatisieren"
+    },
+    "ecommerce": {
+      "title": "E-Commerce",
+      "description": "Produktberatung, Bestellstatus und Retouren einfach verwalten"
+    },
+    "craft": {
+      "title": "Handwerk",
+      "description": "Terminplanung, Angebotserstellung und Kundenanfragen intelligent bearbeiten"
+    },
+    "customerService": {
+      "title": "Kundenservice",
+      "description": "24/7-Support, Ticket-Priorisierung und häufig gestellte Fragen beantworten"
+    }
+  },
+  "demo": {
+    "title": "Testen Sie unseren KI-Assistenten",
+    "subtitle": "Erleben Sie die Leistungsfähigkeit unserer KI-Lösungen",
+    "inputPlaceholder": "Stellen Sie eine Frage...",
+    "sendButton": "Senden",
+    "voiceButton": "Sprachausgabe",
+    "resetButton": "Zurücksetzen",
+    "requestsLeft": "Verbleibende Anfragen heute: {{count}}",
+    "requestLimit": "Sie haben Ihr tägliches Limit erreicht. Kontaktieren Sie uns für eine vollständige Demo."
+  },
+  "about": {
+    "title": "Über uns",
+    "subtitle": "Unsere Mission ist es, Kommunikation zu revolutionieren",
+    "mission": {
+      "title": "Mission",
+      "description": "Wir entwickeln intelligente KI-Lösungen, die Unternehmen dabei helfen, ihre Kundenkommunikation zu optimieren und zu automatisieren."
+    },
+    "vision": {
+      "title": "Vision",
+      "description": "Eine Welt, in der Kommunikation zwischen Unternehmen und Kunden nahtlos, effizient und immer verfügbar ist."
+    },
+    "team": {
+      "title": "Unser Team",
+      "description": "Ein engagiertes Team aus KI-Experten, Entwicklern und Kommunikationsspezialisten."
+    }
+  },
+  "contact": {
+    "title": "Kontakt",
+    "subtitle": "Nehmen Sie Kontakt mit uns auf",
+    "form": {
+      "name": "Name",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "company": "Unternehmen",
+      "message": "Nachricht",
+      "submit": "Absenden",
+      "success": "Vielen Dank für Ihre Nachricht. Wir werden uns in Kürze bei Ihnen melden.",
+      "error": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+    },
+    "whatsapp": "WhatsApp",
+    "calendly": "Termin buchen"
+  },
+  "testimonials": {
+    "title": "Kundenmeinungen",
+    "subtitle": "Was unsere Kunden über uns sagen",
+    "testimonial1": {
+      "name": "Max Mustermann",
+      "company": "Autohaus Mustermann GmbH",
+      "text": "Seit wir den KI-Helpbot einsetzen, haben wir 40% mehr Terminanfragen und unsere Mitarbeiter sparen wertvolle Zeit bei Routineanfragen."
+    },
+    "testimonial2": {
+      "name": "Laura Schmidt",
+      "company": "Online-Shop ModeWelt",
+      "text": "Der Chatbot beantwortet Fragen zu Bestellstatus und Retouren rund um die Uhr und hat unsere Kundenzufriedenheit deutlich verbessert."
+    },
+    "testimonial3": {
+      "name": "Thomas Weber",
+      "company": "Elektro Weber",
+      "text": "Dank des KI-Assistenten können wir Termine effizienter planen und haben weniger administrative Aufgaben. Eine echte Arbeitserleichterung!"
+    }
+  },
+  "footer": {
+    "company": "© 2025 KI-Helpbot GmbH",
+    "privacy": "Datenschutz",
+    "imprint": "Impressum",
+    "terms": "AGB"
+  },
+  "cookieConsent": {
+    "message": "Diese Website verwendet Cookies, um Ihnen die bestmögliche Erfahrung zu bieten. Weitere Informationen finden Sie in unserer Datenschutzerklärung.",
+    "accept": "Akzeptieren",
+    "decline": "Ablehnen"
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "description": "Die gesuchte Seite existiert nicht.",
+    "button": "Zurück zur Startseite"
+  },
+  "chat": {
+    "greeting": "Hallo! Ich bin Ihr KI-Assistent. Wie kann ich Ihnen helfen?",
+    "placeholder": "Stellen Sie Ihre Frage...",
+    "sending": "Wird gesendet...",
+    "error": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+  },
+  "theme": {
+    "toggle": "Design wechseln",
+    "light": "Hell",
+    "dark": "Dunkel"
+  },
+  "language": {
+    "de": "Deutsch",
+    "en": "Englisch"
+  }
+}
