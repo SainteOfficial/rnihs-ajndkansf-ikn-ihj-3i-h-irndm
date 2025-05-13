@@ -272,10 +272,15 @@ export async function callOpenRouterAPI(message: string): Promise<{ text: string
     console.log("OpenRouter Anfrage:", JSON.stringify(requestData).substring(0, 300) + "...");
 
     try {
+      // Verwende die vollständige URL, die explizit in der CSP erlaubt ist
       const response = await axios.post(
         'https://openrouter.ai/api/v1/chat/completions',
         requestData,
-        { headers }
+        { 
+          headers,
+          // Setze withCredentials auf false, um CORS-Probleme zu vermeiden
+          withCredentials: false
+        }
       );
 
       console.log("OpenRouter Antwort erhalten, Status:", response.status);
@@ -412,12 +417,15 @@ export async function callElevenLabsAPI(text: string, voiceSettings?: any): Prom
     console.log("ElevenLabs Anfrage:", JSON.stringify(requestData).substring(0, 200) + "...");
 
     try {
+      // Spezifischere URL für ElevenLabs API verwenden, die in CSP erlaubt ist
       const response = await axios.post(
         `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
         requestData,
         {
           headers,
-          responseType: 'blob'
+          responseType: 'blob',
+          // Deaktiviere withCredentials für CORS
+          withCredentials: false
         }
       );
 
