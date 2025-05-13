@@ -94,7 +94,7 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
   useEffect(() => {
     // Create a script element for Spline loader
     const script = document.createElement('script');
-    script.src = 'https://unpkg.com/@splinetool/runtime/build/spline.js';
+    script.src = 'https://unpkg.com/@splinetool/runtime@0.9.481/build/spline.js';
     script.async = true;
     document.body.appendChild(script);
 
