@@ -9,6 +9,7 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import SEO from '../components/SEO';
+import { isIOSDevice, unlockAudioOnIOS, playAudio } from '../utils/audioUtils';
 
 function DemoPage() {
   const { t } = useTranslation();
@@ -37,22 +38,51 @@ function DemoPage() {
   const [activeTab, setActiveTab] = useState<string>('chat');
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [isIOS, setIsIOS] = useState(false);
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const faqRefs = useRef<Record<number, HTMLButtonElement | null>>({});
+  
+  // Check if on iOS device
+  useEffect(() => {
+    setIsIOS(isIOSDevice());
+  }, []);
   
   // Function to toggle FAQ item
   const toggleFaq = (index: number) => {
     setActiveFaq(activeFaq === index ? null : index);
   };
   
-  // Function to toggle video play/pause
-  const toggleVideo = () => {
+  // Improved audio play function that works on iOS
+  const toggleVideo = async () => {
+    // Unlock iOS audio if needed
+    if (isIOS && !audioUnlocked) {
+      const unlocked = await unlockAudioOnIOS();
+      setAudioUnlocked(unlocked);
+      
+      // If unlocking failed, exit early
+      if (!unlocked) return;
+    }
+    
     if (!videoRef.current) return;
     
     if (isVideoPlaying) {
       videoRef.current.pause();
     } else {
-      videoRef.current.play();
+      try {
+        videoRef.current.play();
+      } catch (error) {
+        console.error("Failed to play audio:", error);
+        
+        // Try using our helper for iOS
+        if (isIOS && audioRef.current) {
+          const audioUrl = audioRef.current.querySelector('source')?.src;
+          if (audioUrl) {
+            playAudio(audioUrl);
+          }
+        }
+      }
     }
     
     setIsVideoPlaying(!isVideoPlaying);
@@ -78,6 +108,15 @@ function DemoPage() {
       videoElement.removeEventListener('ended', handleEnded);
     };
   }, []);
+  
+  // Unlock audio on tab switch to voice
+  useEffect(() => {
+    if (activeTab === 'voice' && isIOS && !audioUnlocked) {
+      unlockAudioOnIOS().then(unlocked => {
+        setAudioUnlocked(unlocked);
+      });
+    }
+  }, [activeTab, isIOS, audioUnlocked]);
 
   // FAQ data
   const faqItems = [
@@ -270,8 +309,21 @@ function DemoPage() {
                       )}
                     </button>
                     
+                    {/* iOS compatibility notice */}
+                    {isIOS && !audioUnlocked && (
+                      <div className="mt-3 text-center text-sm text-amber-600 dark:text-amber-400">
+                        <p>Für Audio auf iOS-Geräten tippen Sie bitte zweimal auf Abspielen.</p>
+                      </div>
+                    )}
+                    
                     {/* Hidden audio element */}
-                    <audio ref={videoRef} className="hidden">
+                    <audio 
+                      ref={videoRef}
+                      className="hidden"
+                      playsInline  
+                      preload="auto"
+                      onTouchStart={isIOS ? toggleVideo : undefined}
+                    >
                       <source src="https://assets.mixkit.co/sfx/preview/mixkit-male-voice-chanting-hello-2.mp3" type="audio/mpeg" />
                       Your browser does not support the audio element.
                     </audio>

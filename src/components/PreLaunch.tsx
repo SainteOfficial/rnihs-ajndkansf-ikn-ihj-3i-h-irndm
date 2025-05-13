@@ -18,6 +18,8 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
   const [subscribed, setSubscribed] = useState(false);
   const [splineLoaded, setSplineLoaded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isIOSDevice, setIsIOSDevice] = useState(false);
+  const audioContextRef = useRef(null);
   
   // Robot 3D model URL
   const ROBOT_SCENE_URL = "https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode";
@@ -53,6 +55,49 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
   const handleSplineLoad = () => {
     console.log('Spline scene loaded in PreLaunch component');
     setSplineLoaded(true);
+  };
+
+  // Detect iOS device
+  useEffect(() => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    setIsIOSDevice(isIOS);
+    
+    // Setup audio context for iOS
+    if (isIOS) {
+      try {
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContext) {
+          audioContextRef.current = new AudioContext();
+        }
+      } catch (e) {
+        console.error("Failed to initialize AudioContext", e);
+      }
+    }
+  }, []);
+  
+  // Function to unlock audio on iOS
+  const unlockAudioForIOS = () => {
+    if (isIOSDevice && audioContextRef.current) {
+      try {
+        // Create silent oscillator to unlock audio
+        const oscillator = audioContextRef.current.createOscillator();
+        const gainNode = audioContextRef.current.createGain();
+        gainNode.gain.value = 0.01; // Very low volume
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContextRef.current.destination);
+        oscillator.start(0);
+        oscillator.stop(0.1); // Short duration
+      } catch (e) {
+        console.error("Error unlocking audio:", e);
+      }
+    }
+  };
+  
+  // Handle robot click
+  const handleRobotClick = () => {
+    unlockAudioForIOS();
+    setShowForm(true);
   };
 
   // This effect runs after render to locate and hide any Spline watermarks
@@ -317,7 +362,7 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
             margin: '0 auto'
           }}
           ref={containerRef}
-          onClick={() => setShowForm(true)}
+          onClick={handleRobotClick}
         >
           {/* Rotating light ring around robot */}
           <motion.div 
@@ -612,6 +657,15 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
             }
           }
         `}</style>
+
+        {/* iOS-specific audio notification if needed */}
+        {isIOSDevice && (
+          <div className="fixed top-2 left-0 right-0 text-center z-50 mx-auto">
+            <div className="inline-block bg-primary-600/80 backdrop-blur-sm text-white text-sm py-1 px-3 rounded-full">
+              Tippen Sie, um Audio zu aktivieren
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

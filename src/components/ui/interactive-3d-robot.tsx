@@ -28,7 +28,19 @@ export function InteractiveRobotSpline({ scene, className }: InteractiveRobotSpl
   const containerRef = useRef<HTMLDivElement>(null);
   const [loadingError, setLoadingError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [showFallback, setShowFallback] = useState(false);
+  const [isIOSDevice, setIsIOSDevice] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const splineRef = useRef(null);
   
+  // Detect iOS device
+  useEffect(() => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    setIsIOSDevice(isIOS);
+  }, []);
+
   useEffect(() => {
     // More aggressive watermark remover that works with iframes
     const removeWatermarks = () => {
@@ -75,6 +87,7 @@ export function InteractiveRobotSpline({ scene, className }: InteractiveRobotSpl
   const handleLoad = () => {
     console.log('Spline scene loaded successfully');
     setIsLoading(false);
+    setIsLoaded(true);
   };
 
   // Handler für Fehler
@@ -82,6 +95,7 @@ export function InteractiveRobotSpline({ scene, className }: InteractiveRobotSpl
     console.error('Error loading Spline scene:', e);
     setLoadingError(true);
     setIsLoading(false);
+    setShowFallback(true);
   };
 
   // Vereinfachter Fallback für die 3D-Komponente
@@ -116,8 +130,29 @@ export function InteractiveRobotSpline({ scene, className }: InteractiveRobotSpl
     </div>
   );
 
+  // Add click handler to enable audio on iOS
+  const enableAudio = () => {
+    setAudioEnabled(true);
+    // Create and play a silent audio context to unlock audio
+    const audioContext = new (window.AudioContext || window['webkitAudioContext'])();
+    const oscillator = audioContext.createOscillator();
+    oscillator.connect(audioContext.destination);
+    oscillator.start();
+    oscillator.stop(0.001);
+  };
+
   return (
-    <div className="relative w-full h-full" ref={containerRef}>
+    <div ref={containerRef} className={`relative ${className}`}>
+      {/* iOS Audio Unlock Banner */}
+      {isIOSDevice && !audioEnabled && (
+        <div 
+          onClick={enableAudio}
+          className="absolute top-0 left-0 right-0 z-50 bg-primary-600/80 text-white text-center py-2 px-4 rounded-t-lg cursor-pointer"
+        >
+          Tippen Sie hier, um Audio zu aktivieren
+        </div>
+      )}
+      
       <ErrorBoundary fallback={fallbackContent}>
         <Suspense
           fallback={
