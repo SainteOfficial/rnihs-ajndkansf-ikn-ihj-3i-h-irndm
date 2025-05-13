@@ -8,8 +8,11 @@ const ELEVENLABS_VOICE_ID = import.meta.env.VITE_ELEVENLABS_VOICE_ID || 'rAmra0S
 console.log('ENV Variablen:', {
   OPENROUTER_MODEL,
   ELEVENLABS_VOICE_ID,
-  OPENROUTER_API_KEY: import.meta.env.VITE_OPENROUTER_API_KEY ? 'Vorhanden' : 'Nicht vorhanden',
-  ELEVENLABS_API_KEY: import.meta.env.VITE_ELEVENLABS_API_KEY ? 'Vorhanden' : 'Nicht vorhanden'
+  OPENROUTER_API_KEY: import.meta.env.VITE_OPENROUTER_API_KEY ? (`Vorhanden (${import.meta.env.VITE_OPENROUTER_API_KEY.substring(0, 5)}...)`) : 'Nicht vorhanden',
+  ELEVENLABS_API_KEY: import.meta.env.VITE_ELEVENLABS_API_KEY ? (`Vorhanden (${import.meta.env.VITE_ELEVENLABS_API_KEY.substring(0, 5)}...)`) : 'Nicht vorhanden',
+  ENV_MODE: import.meta.env.MODE || 'Unbekannt',
+  IS_PROD: import.meta.env.PROD ? 'Ja' : 'Nein',
+  BASE_URL: import.meta.env.BASE_URL || 'Unbekannt',
 });
 
 // Sicherheits-Konfiguration
@@ -50,6 +53,35 @@ function checkRateLimit(): boolean {
   requestTimestamps.push(...validTimestamps);
   
   return true;
+}
+
+// Sicherer Helfer zum Abrufen von API-Keys
+function getApiKey(keyName: string): string {
+  try {
+    const key = import.meta.env[keyName] || '';
+    
+    // Grundlegende Validierung
+    if (!key || typeof key !== 'string' || key.trim() === '') {
+      console.warn(`API-Schlüssel ${keyName} nicht gefunden oder ungültig`);
+      return '';
+    }
+    
+    // Einfache Validierung zur Vermeidung von Injection
+    if (key.includes('<') || key.includes('>') || key.includes('script')) {
+      console.error(`Sicherheitswarnung: Potenziell schädliches API-Key-Format erkannt: ${keyName}`);
+      return '';
+    }
+    
+    // Debug-Ausdrucke (nur in Entwicklung)
+    if (import.meta.env.DEV || import.meta.env.VITE_DEV_MODE === 'true') {
+      console.log(`API-Schlüssel für ${keyName} gefunden (ersten 5 Zeichen): ${key.substring(0, 5)}`);
+    }
+    
+    return key;
+  } catch (error) {
+    console.error(`Fehler beim Abrufen des API-Schlüssels ${keyName}:`, error);
+    return '';
+  }
 }
 
 // Fallback response for when API keys are missing or errors occur
@@ -179,14 +211,15 @@ export async function callOpenRouterAPI(message: string): Promise<{ text: string
       };
     }
     
-    // Get API key from environment
-    const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY || '';
+    // Get API key using our safer helper function
+    const apiKey = getApiKey('VITE_OPENROUTER_API_KEY');
     const model = import.meta.env.VITE_OPENROUTER_MODEL || 'google/gemini-2.0-flash-exp:free';
-    console.log("OpenRouter API Key (ersten 5 Zeichen):", apiKey.substring(0, 5));
+    
+    console.log("OpenRouter API Key (ersten 5 Zeichen):", apiKey ? apiKey.substring(0, 5) : 'Nicht verfügbar');
     console.log("Verwendetes Modell:", model);
     
     // Check if API key is available
-    if (!apiKey || apiKey === '') {
+    if (!apiKey) {
       console.warn('No OpenRouter API key provided. Using fallback response.');
       return getFallbackResponse(sanitizedMessage);
     }
@@ -325,12 +358,12 @@ export async function callElevenLabsAPI(text: string, voiceSettings?: any): Prom
       return useBrowserSpeechSynthesis(sanitizedText);
     }
     
-    // Get API key from environment
-    const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY || '';
-    console.log("ElevenLabs API Key (ersten 5 Zeichen):", apiKey.substring(0, 5));
+    // Get API key using our safer helper function
+    const apiKey = getApiKey('VITE_ELEVENLABS_API_KEY');
+    console.log("ElevenLabs API Key (ersten 5 Zeichen):", apiKey ? apiKey.substring(0, 5) : 'Nicht verfügbar');
     
     // Check if API key is available
-    if (!apiKey || apiKey === '') {
+    if (!apiKey) {
       console.warn('No ElevenLabs API key provided. Using browser speech synthesis.');
       return useBrowserSpeechSynthesis(sanitizedText);
     }
