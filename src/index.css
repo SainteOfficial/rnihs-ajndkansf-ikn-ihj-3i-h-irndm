@@ -245,9 +245,46 @@
   transform-style: preserve-3d;
 }
 
+/* Cross-browser backdrop filter support */
+.backdrop-blur-sm, .backdrop-blur-md, .backdrop-blur-lg, .backdrop-blur-xl, .chat-input {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.backdrop-blur-sm {
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.backdrop-blur-md {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.backdrop-blur-lg {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.backdrop-blur-xl {
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
 .chat-input {
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* Fallbacks for browsers that don't support backdrop-filter */
+@supports not ((backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px))) {
+  .backdrop-blur-sm, .backdrop-blur-md, .backdrop-blur-lg, .backdrop-blur-xl, .chat-input {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+  }
+  
+  .dark .backdrop-blur-sm, .dark .backdrop-blur-md, .dark .backdrop-blur-lg, .dark .backdrop-blur-xl, .dark .chat-input {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+  }
 }
 
 /* Database API animation */
@@ -283,4 +320,47 @@
   100% {
     offset-distance: 100%;
   }
+}
+
+/* Spline 3D Model Integration Fix */
+iframe[src*="spline.design"] {
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+canvas[data-engine="three.js"] {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  outline: none !important;
+}
+
+/* Global fix for Spline Scene */
+.spline-watermark {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Fix for watermark issue */
+[class*="spline"],
+[class*="Spline"] {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+/* For loading issues */
+.spline-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(5px);
+  border-radius: 0.75rem;
 }

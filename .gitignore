@@ -22,4 +22,19 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment Variables und API-Schlüssel
 .env
+.env.local
+.env.development
+.env.production
+.env.test
+keys.env
+**/keys.env
+**/*.pem
+**/*.key
+
+# Vertrauliche Daten
+config/secrets.json
+credentials.json
+auth_config.json

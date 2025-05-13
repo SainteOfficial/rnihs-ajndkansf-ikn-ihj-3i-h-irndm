@@ -6,10 +6,35 @@ import { motion } from 'framer-motion';
 function AdminDashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const navigate = useNavigate();
+  const [resetRequestSuccess, setResetRequestSuccess] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   
   const handleLogout = () => {
     // In a real app, clear auth tokens/cookies
     navigate('/');
+  };
+  
+  // Funktion zum Zurücksetzen der Demo-Anfragen
+  const handleResetDemoRequests = () => {
+    setIsResetting(true);
+    
+    // Zurücksetzen des Anfragenzählers in localStorage
+    try {
+      localStorage.removeItem('ki-helpbot-requests');
+      localStorage.removeItem('ki-helpbot-requests-date');
+      
+      // Erfolg anzeigen
+      setResetRequestSuccess(true);
+      
+      // Erfolgsbenachrichtigung nach 3 Sekunden ausblenden
+      setTimeout(() => {
+        setResetRequestSuccess(false);
+      }, 3000);
+    } catch (error) {
+      console.error('Fehler beim Zurücksetzen der Demo-Anfragen:', error);
+    } finally {
+      setIsResetting(false);
+    }
   };
   
   // Statistics data
@@ -170,6 +195,56 @@ function AdminDashboardPage() {
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
             <p className="text-gray-500 dark:text-gray-400">Willkommen im Admin-Portal von KI-Helpbot</p>
           </header>
+          
+          {/* Demo Reset Button */}
+          <motion.div 
+            className="mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="bg-white dark:bg-dark-200 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-800">
+              <h2 className="text-xl font-semibold mb-4">Demo-Verwaltung</h2>
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-gray-700 dark:text-gray-300 mb-2">
+                    Setzen Sie die Demo-Anfragen zurück, um Benutzern wieder Zugriff auf die Demo zu ermöglichen.
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Dieser Vorgang löscht den Anfragenzähler für alle Benutzer.
+                  </p>
+                </div>
+                <button
+                  onClick={handleResetDemoRequests}
+                  disabled={isResetting}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    isResetting 
+                      ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed' 
+                      : 'bg-primary-600 hover:bg-primary-700 text-white'
+                  }`}
+                >
+                  {isResetting ? 'Wird zurückgesetzt...' : 'Demo-Anfragen zurücksetzen'}
+                </button>
+              </div>
+              
+              {/* Erfolgsbenachrichtigung */}
+              {resetRequestSuccess && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 text-green-700 dark:text-green-300"
+                >
+                  <div className="flex items-center">
+                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <p>Demo-Anfragen wurden erfolgreich zurückgesetzt!</p>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
           
           {/* Stats cards */}
           <motion.div 

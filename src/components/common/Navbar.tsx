@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useI18n } from '../../contexts/I18nContext';
+import SearchBar from './SearchBar';
 
 function Navbar() {
   const { t } = useTranslation();
@@ -129,17 +130,7 @@ function Navbar() {
         { name: 'Mission', path: '/ueber-uns#mission', icon: <Lightbulb size={16} className="text-secondary-500" /> },
         { name: 'Vision', path: '/ueber-uns#vision', icon: <Target size={16} className="text-accent-500" /> }
       ]
-    },
-    { 
-      name: t('navigation.contact'), 
-      path: '/kontakt',
-      icon: <Mail size={16} />
-    },
-    { 
-      name: t('navigation.testimonials'), 
-      path: '/kundenmeinungen',
-      icon: null
-    },
+    }
   ];
 
   return (
@@ -250,35 +241,25 @@ function Navbar() {
                 )}
               </div>
             ))}
-          </div>
         </div>
 
-        {/* Theme and Language Toggles */}
-        <div className="hidden lg:flex items-center gap-1">
+          {/* Theme Toggle */}
+          <div className="ml-2">
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-100 transition-colors"
-            aria-label={t('theme.toggle')}
-          >
-            {theme === 'dark' ? (
-              <motion.div
-                initial={{ rotate: -30, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                transition={{ duration: 0.3 }}
+              className="w-9 h-9 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
               >
-                <Sun size={18} className="text-gray-400" />
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ rotate: 30, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Moon size={18} className="text-gray-600" />
-              </motion.div>
-            )}
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
+          </div>
 
+          {/* Search */}
+          <div className="ml-2">
+            <SearchBar />
+          </div>
+          
+          {/* Language Select */}
           <div className="relative" ref={langDropdownRef}>
             <button
               onClick={toggleLanguageMenu}

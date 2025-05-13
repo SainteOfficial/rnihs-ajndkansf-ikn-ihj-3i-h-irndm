@@ -16,6 +16,15 @@ interface ChatInterfaceProps {
   enableVoice?: boolean;
 }
 
+// Interface für ElevenLabs Voice Settings
+interface VoiceSettings {
+  stability: number;
+  similarity_boost: number;
+  style?: number;
+  use_speaker_boost?: boolean;
+  speed?: number;
+}
+
 function ChatInterface({ maxRequests = 5, enableVoice = true }: ChatInterfaceProps) {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([
@@ -24,13 +33,19 @@ function ChatInterface({ maxRequests = 5, enableVoice = true }: ChatInterfacePro
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [requestsLeft, setRequestsLeft] = useState(maxRequests);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const lastResponseRef = useRef<string>('');
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(new Audio());
+  // Neue State-Variable für Voice Settings
+  const [lastVoiceSettings, setLastVoiceSettings] = useState<VoiceSettings>({
+    stability: 0.5,
+    similarity_boost: 0.75,
+    speed: 1.0
+  });
 
   // Create audio element
   useEffect(() => {
@@ -110,7 +125,23 @@ function ChatInterface({ maxRequests = 5, enableVoice = true }: ChatInterfacePro
     try {
       // Call OpenRouter API
       const response = await callOpenRouterAPI(userMessage);
-      const typedResponse = await simulateTyping(response);
+      
+      // Extract voice settings if available
+      let voiceSettings: VoiceSettings = { ...lastVoiceSettings };
+      
+      // Use voice settings from response if available
+      if (response.voiceSettings) {
+        voiceSettings = {
+          stability: response.voiceSettings.stability || 0.5,
+          similarity_boost: response.voiceSettings.similarity_boost || 0.75,
+          style: response.voiceSettings.style || 0,
+          use_speaker_boost: response.voiceSettings.use_speaker_boost !== undefined ? response.voiceSettings.use_speaker_boost : true,
+          speed: response.voiceSettings.speed || 1.2
+        };
+        setLastVoiceSettings(voiceSettings);
+      }
+      
+      const typedResponse = await simulateTyping(response.text);
       
       const botMessageObj: Message = {
         id: (Date.now() + 1).toString(),
@@ -123,17 +154,19 @@ function ChatInterface({ maxRequests = 5, enableVoice = true }: ChatInterfacePro
       
       // Speak if voice is enabled
       if (voiceEnabled && enableVoice) {
-        speakText(typedResponse);
+        speakText(typedResponse, voiceSettings);
       }
       
       updateRequestCount();
     } catch (error) {
       console.error('Error calling API:', error);
+      // Zeige eine hilfreiche Fehlermeldung an
+      const errorMessage = "Entschuldigung, aber ich kann im Moment nicht antworten. Bitte versuchen Sie es später noch einmal oder kontaktieren Sie unseren Support für Hilfe.";
       setMessages(prevMessages => [
         ...prevMessages,
         {
           id: (Date.now() + 1).toString(),
-          text: t('chat.error'),
+          text: errorMessage,
           isUser: false
         }
       ]);
@@ -143,12 +176,12 @@ function ChatInterface({ maxRequests = 5, enableVoice = true }: ChatInterfacePro
     }
   };
 
-  const speakText = async (text: string) => {
+  const speakText = async (text: string, voiceSettings?: VoiceSettings) => {
     if (!text) return;
     
     try {
       setIsSpeaking(true);
-      const audioBlob = await callElevenLabsAPI(text);
+      const audioBlob = await callElevenLabsAPI(text, voiceSettings);
       if (audioRef.current) {
         const audioUrl = URL.createObjectURL(audioBlob);
         audioRef.current.src = audioUrl;
@@ -165,7 +198,7 @@ function ChatInterface({ maxRequests = 5, enableVoice = true }: ChatInterfacePro
     
     // If enabling voice and we have a last response, speak it
     if (!voiceEnabled && lastResponseRef.current && !isSpeaking) {
-      speakText(lastResponseRef.current);
+      speakText(lastResponseRef.current, lastVoiceSettings);
     }
     
     // If disabling voice and currently speaking, stop it
@@ -372,6 +405,22 @@ function ChatInterface({ maxRequests = 5, enableVoice = true }: ChatInterfacePro
           
           <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-right">
             {t('demo.requestsLeft', { count: requestsLeft })}
+          </div>
+        </div>
+      </div>
+      
+      {/* Hinweis auf hohes Nutzerinteresse */}
+      <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-lg text-amber-700 dark:text-amber-300 text-sm">
+        <div className="flex items-start gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <div>
+            <p>
+              <strong>Hinweis:</strong> Aufgrund des hohen Interesses an unserer Demo kann es zu kurzzeitigen Verzögerungen kommen. Bei vielen gleichzeitigen Anfragen begrenzt unser System temporär die Anzahl der Anfragen, um allen Nutzern ein optimales Erlebnis zu bieten. Bitte versuchen Sie es bei Bedarf nach einer kurzen Pause erneut.
+            </p>
           </div>
         </div>
       </div>

@@ -16,6 +16,7 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
   const [showNewsletter, setShowNewsletter] = useState(false);
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [splineLoaded, setSplineLoaded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Robot 3D model URL
@@ -46,6 +47,12 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
       setShowNewsletter(false);
       setEmail('');
     }, 3000);
+  };
+
+  // Handle Spline load event
+  const handleSplineLoad = () => {
+    console.log('Spline scene loaded in PreLaunch component');
+    setSplineLoaded(true);
   };
 
   // This effect runs after render to locate and hide any Spline watermarks
@@ -83,10 +90,23 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
     return () => clearInterval(intervalId);
   }, []);
 
+  // This effect adds a CSP workaround
+  useEffect(() => {
+    // Create a script element for Spline loader
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/@splinetool/runtime@0.9.493/build/spline.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   return (
     <div className="fixed inset-0 w-full h-full overflow-hidden bg-black">
       {/* Main container - everything centered */}
-      <div className="relative w-full h-full flex items-center justify-center">
+      <div className="relative w-full h-full flex flex-col items-center justify-center">
         {/* Extreme depth effect with layered backgrounds */}
         {/* First set of layers - outermost backgrounds */}
         <div className="absolute inset-0 bg-black overflow-hidden">
@@ -218,15 +238,15 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
           ))}
         </div>
         
-        {/* Logo - UPDATED to use favicon SVG */}
+        {/* Logo - UPDATED with responsive positioning */}
         <motion.div 
-          className="absolute top-6 left-6 z-40 flex items-center"
+          className="absolute top-4 sm:top-6 left-4 sm:left-6 z-40 flex items-center"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.8 }}
         >
-          <div className="w-10 h-10 mr-2 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0078f2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 mr-2 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="#0078f2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="11" width="18" height="10" rx="2" />
               <circle cx="12" cy="5" r="2" />
               <path d="M12 7v4" />
@@ -234,21 +254,21 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
               <line x1="16" y1="16" x2="16" y2="16" />
             </svg>
           </div>
-          <div className="text-white font-semibold tracking-wider text-lg">
+          <div className="text-white font-semibold tracking-wider text-sm sm:text-lg">
             KI-HELPBOT<span className="text-cyan-400">.DE</span>
           </div>
         </motion.div>
 
-        {/* Pre-launch text/indicator - NEW */}
+        {/* Pre-launch text/indicator - UPDATED with responsive positioning */}
         <motion.div 
-          className="absolute top-6 right-6 z-40 flex items-center"
+          className="absolute top-4 sm:top-6 right-4 sm:right-6 z-40 flex items-center"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
         >
-          <div className="bg-cyan-500/10 backdrop-blur-sm py-1.5 px-3 rounded-full border border-cyan-500/20 flex items-center">
-            <div className="w-2 h-2 rounded-full bg-cyan-400 mr-2 animate-pulse"></div>
-            <span className="text-cyan-400 text-sm font-medium tracking-wide">Vorschau-Modus</span>
+          <div className="bg-cyan-500/10 backdrop-blur-sm py-1 sm:py-1.5 px-2 sm:px-3 rounded-full border border-cyan-500/20 flex items-center">
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyan-400 mr-1.5 sm:mr-2 animate-pulse"></div>
+            <span className="text-cyan-400 text-xs sm:text-sm font-medium tracking-wide">Vorschau</span>
           </div>
         </motion.div>
         
@@ -268,38 +288,38 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
           }}
         ></div>
         
-        {/* Coming Soon Banner - NEW */}
+        {/* Coming Soon Banner - UPDATED with responsive sizing and margins */}
         <motion.div
-          className="absolute top-24 md:top-32 w-full px-4 z-40 text-center"
+          className="absolute top-16 sm:top-20 md:top-24 w-full px-4 z-40 text-center"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.8 }}
         >
-          <div className="bg-black/30 backdrop-blur-md py-4 px-6 inline-block rounded-2xl border border-cyan-500/10">
-            <h1 className="text-white text-2xl md:text-3xl font-bold mb-2">
+          <div className="bg-black/30 backdrop-blur-md py-3 sm:py-4 px-4 sm:px-6 inline-block rounded-xl sm:rounded-2xl border border-cyan-500/10">
+            <h1 className="text-white text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2">
               <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Wir sind in Kürze für Sie da</span>
             </h1>
-            <p className="text-gray-300 text-sm md:text-base max-w-lg">
+            <p className="text-gray-300 text-xs sm:text-sm md:text-base max-w-lg" lang="de">
               Unsere neue Plattform befindet sich in der Endphase der Entwicklung und wird in Kürze für Sie bereit sein.
             </p>
           </div>
         </motion.div>
         
-        {/* The robot container - centered position enforced - optimized for mobile */}
+        {/* The robot container - UPDATED with better responsive sizing */}
         <div 
-          className="relative z-10 flex items-center justify-center mt-20 sm:mt-0" 
+          className="relative z-10 flex items-center justify-center mt-14 mb-12 sm:my-0" 
           style={{
             width: '1000px',
             height: '1000px',
-            maxWidth: '85vmin',
-            maxHeight: '85vmin',
+            maxWidth: '65vmin',
+            maxHeight: '65vmin',
             position: 'relative',
             margin: '0 auto'
           }}
           ref={containerRef}
           onClick={() => setShowForm(true)}
         >
-          {/* Rotating light ring around robot - NEW */}
+          {/* Rotating light ring around robot */}
           <motion.div 
             className="absolute w-[90%] h-[90%] rounded-full border-2 border-cyan-500/5 pointer-events-none"
             style={{ 
@@ -361,25 +381,26 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
             ></div>
           </div>
           
-          {/* Watermark cover layers - MOBILE OPTIMIZED with smaller coverage */}
+          {/* Watermark cover layers - ENHANCED for better coverage */}
           <div 
-            className="absolute bottom-0 right-0 w-[25%] h-[25%] md:w-[20%] md:h-[20%] pointer-events-none z-[1000]"
+            className="absolute bottom-0 right-0 w-[30%] h-[30%] md:w-[25%] md:h-[25%] pointer-events-none z-[1000]"
             style={{
               background: 'radial-gradient(circle at bottom right, rgba(0,0,0,1) 30%, rgba(0,0,0,0.9) 50%, rgba(0,0,0,0.7) 70%, rgba(0,0,0,0) 100%)',
               mixBlendMode: 'normal'
             }}
           ></div>
           
-          {/* Additional corner covering - reduced size for mobile */}
+          {/* Additional corner covering - increased size for better coverage */}
           <div 
-            className="absolute bottom-0 right-0 w-[12%] h-[12%] md:w-[10%] md:h-[10%] bg-black/90 pointer-events-none z-[999]"
+            className="absolute bottom-0 right-0 w-[15%] h-[15%] md:w-[12%] md:h-[12%] bg-black/90 pointer-events-none z-[999]"
             style={{
               borderTopLeftRadius: '20%' 
             }}
           ></div>
           
-          {/* Absolute positioned element to cover any remaining watermark - smaller for mobile */}
-          <div className="absolute bottom-3 right-3 w-[12%] h-[5%] bg-black z-[1001] pointer-events-none"></div>
+          {/* Multiple absolute positioned elements to cover any remaining watermark */}
+          <div className="absolute bottom-3 right-3 w-[15%] h-[6%] bg-black z-[1001] pointer-events-none"></div>
+          <div className="absolute bottom-4 right-4 w-[10%] h-[10%] bg-black/80 z-[1001] pointer-events-none rounded-tl-lg"></div>
         </div>
         
         {/* Additional fadeout layer - reduced opacity to make meteors more visible */}
@@ -403,7 +424,7 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
           <Meteors number={8} />
         </div>
 
-        {/* Password form */}
+        {/* Password form - IMPROVED mobile padding */}
         <AnimatePresence>
           {showForm && (
             <motion.div 
@@ -418,30 +439,30 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
               }}
             >
               <motion.div 
-                className="w-full max-w-md p-6"
+                className="w-full max-w-md p-3 sm:p-6"
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 20, scale: 0.95 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="bg-black/70 backdrop-blur-xl p-8 rounded-2xl border border-cyan-800/30 shadow-xl shadow-cyan-900/10">
-                  <h2 className="text-white text-2xl font-bold mb-6">Zugangs-Verifizierung</h2>
+                <div className="bg-black/70 backdrop-blur-xl p-4 sm:p-8 rounded-xl sm:rounded-2xl border border-cyan-800/30 shadow-xl shadow-cyan-900/10">
+                  <h2 className="text-white text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Zugangs-Verifizierung</h2>
                   
                   <form onSubmit={handleSubmit}>
-                    <div className="mb-6">
+                    <div className="mb-4 sm:mb-6">
                       <label className="block text-gray-400 text-sm font-medium mb-2">Passwort</label>
                       <input
                         type="password"
                         value={inputPassword}
                         onChange={(e) => setInputPassword(e.target.value)}
                         placeholder="Zugangspasswort eingeben"
-                        className="w-full px-4 py-3 bg-black/50 border border-cyan-700/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
+                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-black/50 border border-cyan-700/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
                         required
                       />
                     </div>
                     
                     {error && (
-                      <div className="mb-6 text-red-400 text-sm bg-red-900/20 border border-red-900/30 rounded-lg p-3">
+                      <div className="mb-4 sm:mb-6 text-red-400 text-sm bg-red-900/20 border border-red-900/30 rounded-lg p-3">
                         {error}
                       </div>
                     )}
@@ -457,14 +478,14 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
                       
                       <button
                         type="submit"
-                        className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-2.5 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 font-medium"
+                        className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 font-medium text-sm sm:text-base"
                       >
                         Bestätigen
                       </button>
                     </div>
                   </form>
                   
-                  <div className="mt-6 text-xs text-gray-500 text-center">
+                  <div className="mt-4 sm:mt-6 text-xs text-gray-500 text-center">
                     Zugang nur für autorisierte Benutzer
                   </div>
                 </div>
@@ -473,7 +494,7 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
           )}
         </AnimatePresence>
         
-        {/* Newsletter form - NEW */}
+        {/* Newsletter form - IMPROVED mobile padding */}
         <AnimatePresence>
           {showNewsletter && (
             <motion.div 
@@ -488,27 +509,27 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
               }}
             >
               <motion.div 
-                className="w-full max-w-md p-6"
+                className="w-full max-w-md p-3 sm:p-6"
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 20, scale: 0.95 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="bg-black/70 backdrop-blur-xl p-8 rounded-2xl border border-cyan-800/30 shadow-xl shadow-cyan-900/10">
+                <div className="bg-black/70 backdrop-blur-xl p-4 sm:p-8 rounded-xl sm:rounded-2xl border border-cyan-800/30 shadow-xl shadow-cyan-900/10">
                   {!subscribed ? (
                     <>
-                      <h2 className="text-white text-2xl font-bold mb-2">Bleiben Sie informiert</h2>
-                      <p className="text-gray-400 mb-6">Erhalten Sie Zugang und exklusive Updates.</p>
+                      <h2 className="text-white text-xl sm:text-2xl font-bold mb-1 sm:mb-2">Bleiben Sie informiert</h2>
+                      <p className="text-gray-400 mb-4 sm:mb-6 text-sm">Erhalten Sie Zugang und exklusive Updates.</p>
                       
                       <form onSubmit={handleNewsletterSubmit}>
-                        <div className="mb-6">
+                        <div className="mb-4 sm:mb-6">
                           <label className="block text-gray-400 text-sm font-medium mb-2">E-Mail Adresse</label>
                           <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="ihre@email.de"
-                            className="w-full px-4 py-3 bg-black/50 border border-cyan-700/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
+                            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-black/50 border border-cyan-700/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
                             required
                           />
                         </div>
@@ -524,26 +545,26 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
                           
                           <button
                             type="submit"
-                            className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-2.5 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 font-medium"
+                            className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 font-medium text-sm sm:text-base"
                           >
                             Anmelden
                           </button>
                         </div>
                       </form>
                       
-                      <div className="mt-6 text-xs text-gray-500 text-center">
+                      <div className="mt-4 sm:mt-6 text-xs text-gray-500 text-center">
                         Wir respektieren Ihre Privatsphäre und versenden nur relevante Updates.
                       </div>
                     </>
                   ) : (
-                    <div className="text-center py-6">
-                      <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <div className="text-center py-4 sm:py-6">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                        <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
-                      <h3 className="text-white text-xl font-bold mb-2">Vielen Dank!</h3>
-                      <p className="text-gray-400">Sie erhalten in Kürze eine Bestätigungs-E-Mail.</p>
+                      <h3 className="text-white text-lg sm:text-xl font-bold mb-1 sm:mb-2">Vielen Dank!</h3>
+                      <p className="text-gray-400 text-sm">Sie erhalten in Kürze eine Bestätigungs-E-Mail.</p>
                     </div>
                   )}
                 </div>
@@ -552,21 +573,21 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
           )}
         </AnimatePresence>
 
-        {/* Enhanced hint text when form is not shown - removed social links */}
+        {/* Enhanced hint text when form is not shown - IMPROVED responsive positioning */}
         {!showForm && !showNewsletter && (
           <motion.div 
-            className="absolute bottom-10 left-0 right-0 text-center z-30"
+            className="absolute bottom-4 sm:bottom-8 left-0 right-0 text-center z-30 px-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2, duration: 1 }}
           >
-            <div className="text-gray-400 text-base mb-2 px-4">Klicken Sie den Roboter an, um fortzufahren</div>
-            <div className="text-gray-600 text-sm">© KI-HELPBOT.DE | Exklusiver Vorabzugang</div>
+            <div className="text-gray-400 text-sm sm:text-base mb-1 sm:mb-2">Klicken Sie den Roboter an, um fortzufahren</div>
+            <div className="text-gray-600 text-xs sm:text-sm">© KI-HELPBOT.DE | Exklusiver Vorabzugang</div>
           </motion.div>
         )}
         
         {/* Add CSS animation for light beams */}
-        <style jsx>{`
+        <style>{`
           @keyframes rotateLightBeam {
             from { transform: translateX(-50%) rotate(0deg); }
             to { transform: translateX(-50%) rotate(360deg); }
@@ -576,6 +597,19 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
             0% { opacity: 1; }
             50% { opacity: 0.5; }
             100% { opacity: 1; }
+          }
+
+          /* Prevent text selection for better UX */
+          .selectable-none {
+            user-select: none;
+            -webkit-user-select: none;
+          }
+
+          /* Responsive handling for very small screens */
+          @media (max-height: 500px) {
+            .banner-text {
+              display: none;
+            }
           }
         `}</style>
       </div>

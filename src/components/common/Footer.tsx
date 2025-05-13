@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Bot, Mail, Phone, MapPin, Instagram, Twitter, Facebook, Linkedin, Lock, ChevronRight } from 'lucide-react';
+import { Bot, Mail, Phone, MapPin, Instagram, Twitter, Facebook, Linkedin, Lock, ChevronRight, Map } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -65,6 +65,12 @@ function Footer() {
               <li>
                 <Link to="/ueber-uns" className="text-gray-400 hover:text-primary-500 transition-colors">
                   {t('navigation.about')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/sitemap" className="text-gray-400 hover:text-primary-500 transition-colors flex items-center gap-1.5">
+                  <Map size={16} />
+                  Sitemap
                 </Link>
               </li>
             </ul>
@@ -188,6 +194,9 @@ function Footer() {
             </Link>
             <Link to="/agb" className="text-gray-500 hover:text-primary-500 transition-colors">
               {t('footer.terms')}
+            </Link>
+            <Link to="/sitemap" className="text-gray-500 hover:text-primary-500 transition-colors">
+              Sitemap
             </Link>
           </div>
         </div>

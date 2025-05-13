@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AnimatePresence } from 'framer-motion';
 import { Check, Info, X, Shield } from 'lucide-react';
+import { enhanceSessionSecurity } from './utils/securityUtils';
 
 // Import our custom components
 import CookieConsentBanner from './components/common/CookieConsentBanner';
@@ -23,6 +24,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import AGBPage from './pages/legal/AGBPage';
 import ImpressumPage from './pages/legal/ImpressumPage';
 import DatenschutzPage from './pages/legal/DatenschutzPage';
+import SitemapPage from './pages/SitemapPage';
 
 // Admin Pages
 import AdminLoginPage from './pages/admin/AdminLoginPage';
@@ -52,6 +54,9 @@ function App() {
 
   // Check for authentication and cookies on load
   useEffect(() => {
+    // Enhance security measures
+    enhanceSessionSecurity();
+    
     // For testing purposes, we force clear localStorage to see the PreLaunch page
     localStorage.removeItem('siteAccessAuth');
     
@@ -110,6 +115,7 @@ function App() {
           <Route path="ueber-uns" element={<AboutUsPage />} />
           <Route path="kontakt" element={<ContactPage />} />
           <Route path="kundenmeinungen" element={<TestimonialsPage />} />
+          <Route path="sitemap" element={<SitemapPage />} />
           
           {/* Legal pages */}
           <Route path="agb" element={<AGBPage />} />
