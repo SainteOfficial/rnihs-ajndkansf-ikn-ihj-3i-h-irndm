@@ -9,6 +9,18 @@ interface SearchResult {
   section?: string;
 }
 
+// Create a simple event system for search
+export const searchEvents = {
+  open: () => {
+    const event = new CustomEvent('openGlobalSearch');
+    document.dispatchEvent(event);
+  },
+  close: () => {
+    const event = new CustomEvent('closeGlobalSearch');
+    document.dispatchEvent(event);
+  }
+};
+
 const SearchBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,6 +28,25 @@ const SearchBar = () => {
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+
+  // Listen for global search events
+  useEffect(() => {
+    const handleOpenGlobalSearch = () => {
+      setIsOpen(true);
+    };
+
+    const handleCloseGlobalSearch = () => {
+      setIsOpen(false);
+    };
+
+    document.addEventListener('openGlobalSearch', handleOpenGlobalSearch);
+    document.addEventListener('closeGlobalSearch', handleCloseGlobalSearch);
+
+    return () => {
+      document.removeEventListener('openGlobalSearch', handleOpenGlobalSearch);
+      document.removeEventListener('closeGlobalSearch', handleCloseGlobalSearch);
+    };
+  }, []);
 
   // Simulated search data - in a real app, this might come from an API or indexing service
   const searchableContent: SearchResult[] = [
