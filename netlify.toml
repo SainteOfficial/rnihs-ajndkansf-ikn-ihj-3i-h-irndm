@@ -15,7 +15,7 @@
   [headers.values]
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
-    Content-Security-Policy = "default-src 'self' blob: https://openrouter.ai https://*.openrouter.ai https://api.elevenlabs.io https://*.elevenlabs.io; connect-src 'self' https://openrouter.ai https://*.openrouter.ai https://api.elevenlabs.io https://*.elevenlabs.io https://*.spline.design wss://*.spline.design https://prod.spline.design; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.spline.design; media-src 'self' blob: data: https://*.elevenlabs.io; object-src 'none'; base-uri 'self';"
+    Content-Security-Policy = "default-src 'self' blob: https://openrouter.ai https://*.openrouter.ai https://api.elevenlabs.io https://*.elevenlabs.io; connect-src 'self' https://openrouter.ai https://*.openrouter.ai https://api.elevenlabs.io https://*.elevenlabs.io https://*.spline.design wss://*.spline.design https://prod.spline.design https://www.gstatic.com https://*.gstatic.com https://unpkg.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://www.gstatic.com https://*.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.spline.design; media-src 'self' blob: data: https://*.elevenlabs.io; object-src 'none'; base-uri 'self';"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
     Permissions-Policy = "microphone=(), geolocation=(), camera=()" 
