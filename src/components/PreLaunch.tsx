@@ -100,37 +100,139 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
     setShowForm(true);
   };
 
+  // Enhanced watermark removal for better mobile experience
+  useEffect(() => {
+    // Detect mobile device
+    const isMobileDevice = window.innerWidth < 768 || 
+                          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    const createProfessionalMobileExperience = () => {
+      try {
+        // Find the robot container
+        const robotContainer = document.querySelector('.spline-canvas')?.parentElement;
+        if (robotContainer) {
+          // Remove any existing mobile overlays
+          const existingOverlays = robotContainer.querySelectorAll('.mobile-professional-overlay');
+          existingOverlays.forEach(overlay => overlay.remove());
+          
+          // Create a professional footer for mobile
+          if (isMobileDevice) {
+            // Create footer gradient bar
+            const footerBar = document.createElement('div');
+            footerBar.className = 'mobile-professional-overlay';
+            footerBar.style.position = 'absolute';
+            footerBar.style.left = '0';
+            footerBar.style.right = '0';
+            footerBar.style.bottom = '0';
+            footerBar.style.height = '40px';
+            footerBar.style.background = 'linear-gradient(to top, rgba(0,0,0,1) 50%, rgba(0,0,0,0.7) 80%, rgba(0,0,0,0) 100%)';
+            footerBar.style.zIndex = '99999';
+            footerBar.style.pointerEvents = 'none';
+            
+            // Add logo to footer
+            const logo = document.createElement('div');
+            logo.style.position = 'absolute';
+            logo.style.left = '50%';
+            logo.style.bottom = '10px';
+            logo.style.transform = 'translateX(-50%)';
+            logo.style.fontFamily = 'sans-serif';
+            logo.style.fontSize = '14px';
+            logo.style.fontWeight = '600';
+            logo.style.color = 'rgba(255,255,255,0.7)';
+            logo.textContent = 'KI-HELPBOT';
+            footerBar.appendChild(logo);
+            
+            robotContainer.appendChild(footerBar);
+          }
+        }
+      } catch (e) {
+        console.error('Error creating professional mobile experience:', e);
+      }
+    };
+    
+    // Run with delay to ensure everything is loaded
+    const initialTimeout = setTimeout(createProfessionalMobileExperience, 2000);
+    const intervalId = setInterval(createProfessionalMobileExperience, 5000);
+    
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(intervalId);
+    };
+  }, []);
+
   // This effect runs after render to locate and hide any Spline watermarks
   useEffect(() => {
     // Create a repeating function to handle the watermark
     const hideWatermark = () => {
-      // Find any potential watermark elements (usually they'd be a div with text and link)
-      const elements = document.querySelectorAll('div > a[target="_blank"]');
+      // Find any potential watermark elements with various selectors
+      const possibleWatermarks = [
+        // Direct link selector - nur Links zu Spline suchen
+        document.querySelectorAll('a[href*="spline.design"]'),
+        // Bottom right positioned elements - nur kleine Elemente in der unteren rechten Ecke
+        document.querySelectorAll('div[style*="position: absolute"][style*="bottom: 0"][style*="right: 0"][style*="height"]'),
+        // Kleine Elemente die "Made with" enthalten
+        document.querySelectorAll('div:not(.spline-fallback) div[style*="position: absolute"]')
+      ];
       
-      elements.forEach(element => {
-        // Check if it looks like a watermark
-        if (element.textContent?.includes('Spline') || 
-            element.getAttribute('href')?.includes('spline.design')) {
-          // Hide the parent container completely
-          const parent = element.parentElement;
-          if (parent) {
-            parent.style.display = 'none';
-            parent.style.opacity = '0';
-            parent.style.visibility = 'hidden';
-            parent.style.pointerEvents = 'none';
-            // Move it way off-screen to be sure
-            parent.style.position = 'absolute';
-            parent.style.left = '-9999px';
+      // Process all found elements
+      possibleWatermarks.forEach(elements => {
+        elements.forEach(element => {
+          // WICHTIG: Hauptcontainer niemals verstecken
+          if (element.classList.contains('fixed') && element.classList.contains('inset-0')) {
+            console.log("Ignoring main container", element);
+            return;
           }
-        }
+          
+          // Check if element is too large (likely not a watermark)
+          const rect = element.getBoundingClientRect();
+          if (rect.width > 150 && rect.height > 150) {
+            console.log("Ignoring large element", element);
+            return;
+          }
+          
+          // Check if it looks like a watermark
+          const isWatermark = 
+            (element.textContent?.toLowerCase()?.includes('spline') || 
+             element.textContent?.toLowerCase()?.includes('made with') ||
+             element.getAttribute('href')?.includes('spline.design') ||
+             // Nur kleine Elemente in der Ecke
+             (element.style?.position === 'absolute' && 
+              element.style?.bottom === '0px' && 
+              element.style?.right === '0px' &&
+              element.clientWidth < 150 &&
+              element.clientHeight < 50));
+          
+          if (isWatermark) {
+            console.log("Found Spline watermark", element);
+            // Hide the element itself
+            element.style.display = 'none';
+            element.style.opacity = '0';
+            element.style.visibility = 'hidden';
+            element.style.pointerEvents = 'none';
+            
+            // Hide parent only if it's not a major container
+            const parent = element.parentElement;
+            if (parent && !parent.classList.contains('fixed') && !parent.classList.contains('inset-0')) {
+              const parentRect = parent.getBoundingClientRect();
+              if (parentRect.width < 200 && parentRect.height < 200) {
+                parent.style.display = 'none';
+                parent.style.opacity = '0';
+                parent.style.visibility = 'hidden';
+                parent.style.pointerEvents = 'none';
+              }
+            }
+          }
+        });
       });
+      
+      // ENTFERNT: Kein Verstecken von Canvas-Geschwistern mehr, das war zu aggressiv
     };
 
     // Run immediately after mount
-    hideWatermark();
+    setTimeout(hideWatermark, 500); // Kurze Verzögerung, damit die Seite zuerst richtig geladen wird
     
-    // Also create an interval to catch watermarks that appear later
-    const intervalId = setInterval(hideWatermark, 500);
+    // Create an interval that runs less frequently to catch watermarks
+    const intervalId = setInterval(hideWatermark, 2000); // Längeres Intervall, weniger aggressiv
     
     return () => clearInterval(intervalId);
   }, []);
@@ -319,9 +421,9 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
         
         {/* Deep space hole - slightly reduced opacity to make meteors more visible */}
         <div 
-          className="absolute pointer-events-none"
+          className="absolute pointer-events-none mobile-reduce-fade"
           style={{
-            background: 'radial-gradient(circle at center, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 20%, rgba(0,0,0,0.8) 40%, rgba(0,0,0,0.9) 60%)',
+            background: 'radial-gradient(circle at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 20%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.8) 60%)',
             width: '130vmax',
             height: '130vmax',
             position: 'absolute',
@@ -352,12 +454,12 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
         
         {/* The robot container - UPDATED with better responsive sizing */}
         <div 
-          className="relative z-10 flex items-center justify-center mt-14 mb-12 sm:my-0" 
+          className="relative z-10 flex items-center justify-center mt-10 sm:mt-14 mb-10 sm:mb-12 sm:my-0" 
           style={{
             width: '1000px',
             height: '1000px',
-            maxWidth: '65vmin',
-            maxHeight: '65vmin',
+            maxWidth: '75vmin',
+            maxHeight: '75vmin',
             position: 'relative',
             margin: '0 auto'
           }}
@@ -413,46 +515,46 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
           <div className="w-full h-full relative">
             <InteractiveRobotSpline 
               scene={ROBOT_SCENE_URL} 
-              className="w-full h-full"
+              className="w-full h-full spline-canvas"
             />
             
             {/* Fade out edges to create perfect transition */}
             <div 
-              className="absolute inset-0 rounded-full pointer-events-none"
+              className="absolute inset-0 rounded-full pointer-events-none mobile-reduce-fade"
               style={{
-                boxShadow: 'inset 0 0 150px 80px rgba(0,0,0,0.7)', // Reduced opacity
+                boxShadow: 'inset 0 0 150px 80px rgba(0,0,0,0.5)', // Reduced opacity for mobile
                 zIndex: 20
               }}
             ></div>
           </div>
           
-          {/* Watermark cover layers - ENHANCED for better coverage */}
+          {/* Watermark cover layers - ENHANCED for better coverage but responsive for mobile */}
           <div 
-            className="absolute bottom-0 right-0 w-[30%] h-[30%] md:w-[25%] md:h-[25%] pointer-events-none z-[1000]"
+            className="absolute bottom-0 right-0 w-25% h-25% md:w-30% md:h-30% pointer-events-none z-[1000] hidden md:block"
             style={{
-              background: 'radial-gradient(circle at bottom right, rgba(0,0,0,1) 30%, rgba(0,0,0,0.9) 50%, rgba(0,0,0,0.7) 70%, rgba(0,0,0,0) 100%)',
+              background: 'radial-gradient(circle at bottom right, rgba(0,0,0,1) 30%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0) 100%)',
               mixBlendMode: 'normal'
             }}
           ></div>
           
-          {/* Additional corner covering - increased size for better coverage */}
+          {/* Additional corner covering - for precise watermark covering on desktop only */}
           <div 
-            className="absolute bottom-0 right-0 w-[15%] h-[15%] md:w-[12%] md:h-[12%] bg-black/90 pointer-events-none z-[999]"
+            className="absolute bottom-0 right-0 w-15% h-12% md:w-15% md:h-15% bg-black pointer-events-none z-[999] hidden md:block"
             style={{
               borderTopLeftRadius: '20%' 
             }}
           ></div>
           
-          {/* Multiple absolute positioned elements to cover any remaining watermark */}
-          <div className="absolute bottom-3 right-3 w-[15%] h-[6%] bg-black z-[1001] pointer-events-none"></div>
-          <div className="absolute bottom-4 right-4 w-[10%] h-[10%] bg-black/80 z-[1001] pointer-events-none rounded-tl-lg"></div>
+          {/* Multiple absolute positioned elements to cover watermark - precise targeting for desktop */}
+          <div className="absolute bottom-0 right-0 w-[100px] h-[30px] bg-black z-[1001] pointer-events-none hidden md:block"></div>
+          <div className="absolute bottom-1 right-1 w-[80px] h-[25px] bg-black z-[1001] pointer-events-none hidden md:block"></div>
         </div>
         
         {/* Additional fadeout layer - reduced opacity to make meteors more visible */}
         <div 
-          className="absolute pointer-events-none z-20"
+          className="absolute pointer-events-none z-20 mobile-reduce-fade"
           style={{
-            background: 'radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0.9) 100%)',
+            background: 'radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.2) 70%, rgba(0,0,0,0.7) 100%)',
             width: '150vmax',
             height: '150vmax',
             position: 'absolute',
@@ -460,7 +562,7 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
             top: '50%',
             transform: 'translate(-50%, -50%)',
             mixBlendMode: 'multiply',
-            opacity: 0.6
+            opacity: 0.5
           }}
         ></div>
 
@@ -649,11 +751,47 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
             user-select: none;
             -webkit-user-select: none;
           }
+          
+          /* Watermark removal helper rules */
+          [href*="spline.design"],
+          a[target="_blank"]:has(> img[alt*="Made with Spline"]),
+          div:has(> a[href*="spline.design"]) {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            width: 0 !important;
+            position: absolute !important;
+            bottom: 0 !important;
+            right: 0 !important;
+            pointer-events: none !important;
+          }
+          
+          /* Hide bottom right div that is likely a watermark */
+          div[style*="position: absolute"][style*="bottom: 0"][style*="right: 0"]:not(.spline-fallback) {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+          }
 
           /* Responsive handling for very small screens */
           @media (max-height: 500px) {
             .banner-text {
               display: none;
+            }
+          }
+          
+          /* Mobile specific adjustments for watermark prevention */
+          @media (max-width: 640px) {
+            /* Adjust 3D model on mobile for better visibility */
+            .spline-canvas {
+              transform: scale(0.85) translateY(-5%);
+            }
+            
+            /* Reduce opacity of fade effects on mobile */
+            .mobile-reduce-fade {
+              opacity: 0.4 !important;
             }
           }
         `}</style>

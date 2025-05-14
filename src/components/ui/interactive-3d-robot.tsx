@@ -41,6 +41,97 @@ export function InteractiveRobotSpline({ scene, className }: InteractiveRobotSpl
     setIsIOSDevice(isIOS);
   }, []);
 
+  // Mobile-spezifische Anpassungen
+  useEffect(() => {
+    // Erkennen, ob wir auf einem mobilen Gerät sind
+    const isMobileDevice = window.innerWidth < 768 || 
+                          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobileDevice) {
+      console.log("Detected mobile device, applying professional container");
+      
+      // Alle unnötigen Abdeckungselemente entfernen
+      const removeExistingCovers = () => {
+        const covers = document.querySelectorAll('[class*="absolute bottom-"][class*="right-"]');
+        covers.forEach(cover => {
+          if (cover.classList.contains('mobile-watermark-cover')) return; // Eigene Elemente behalten
+          cover.remove();
+        });
+      };
+      
+      // Professionellen Container um den 3D-Roboter erstellen
+      const createProfessionalContainer = () => {
+        try {
+          // Bestehenden Container finden
+          if (containerRef.current) {
+            // Bestehende mobile Container entfernen, um Duplikate zu vermeiden
+            const existingContainers = containerRef.current.querySelectorAll('.mobile-container-overlay');
+            existingContainers.forEach(container => container.remove());
+            
+            // Eleganten Container erstellen
+            const container = document.createElement('div');
+            container.className = 'mobile-container-overlay';
+            container.style.position = 'absolute';
+            container.style.bottom = '0';
+            container.style.left = '0';
+            container.style.right = '0';
+            container.style.height = '100%';
+            container.style.pointerEvents = 'none';
+            container.style.zIndex = '999';
+            container.style.background = 'transparent';
+            
+            // Elegante untere Leiste hinzufügen
+            const bottomBar = document.createElement('div');
+            bottomBar.className = 'mobile-watermark-cover';
+            bottomBar.style.position = 'absolute';
+            bottomBar.style.bottom = '0';
+            bottomBar.style.left = '0';
+            bottomBar.style.right = '0';
+            bottomBar.style.height = '40px';
+            bottomBar.style.background = 'linear-gradient(to top, rgba(0,0,0,1) 50%, rgba(0,0,0,0.8) 80%, rgba(0,0,0,0) 100%)';
+            bottomBar.style.backdropFilter = 'blur(3px)';
+            bottomBar.style.zIndex = '1000';
+            
+            // Logo zur Leiste hinzufügen
+            const logo = document.createElement('div');
+            logo.className = 'mobile-logo';
+            logo.style.position = 'absolute';
+            logo.style.bottom = '8px';
+            logo.style.left = '50%';
+            logo.style.transform = 'translateX(-50%)';
+            logo.style.color = 'rgba(255,255,255,0.7)';
+            logo.style.fontSize = '14px';
+            logo.style.fontWeight = '500';
+            logo.style.zIndex = '1001';
+            logo.style.fontFamily = 'sans-serif';
+            logo.textContent = 'KI-HELPBOT';
+            
+            // Elemente einfügen
+            container.appendChild(bottomBar);
+            container.appendChild(logo);
+            containerRef.current.appendChild(container);
+          }
+        } catch (e) {
+          console.error("Error creating professional container:", e);
+        }
+      };
+      
+      // Verzögert ausführen und wiederholen
+      setTimeout(removeExistingCovers, 300);
+      setTimeout(createProfessionalContainer, 500);
+      
+      // Wiederholen um sicherzugehen, dass es nach allen DOM-Änderungen noch da ist
+      const intervalId = setInterval(() => {
+        removeExistingCovers();
+        createProfessionalContainer();
+      }, 2000);
+      
+      return () => {
+        clearInterval(intervalId);
+      };
+    }
+  }, []);
+
   useEffect(() => {
     // More aggressive watermark remover that works with iframes
     const removeWatermarks = () => {
@@ -58,12 +149,56 @@ export function InteractiveRobotSpline({ scene, className }: InteractiveRobotSpl
               watermarkLinks.forEach(link => {
                 const parent = link.parentElement;
                 if (parent) {
-                  parent.style.display = 'none';
-                  parent.style.opacity = '0';
-                  parent.style.visibility = 'hidden';
-                  parent.style.pointerEvents = 'none';
+                  // Größe prüfen, um wesentliche Elemente nicht zu verstecken
+                  const rect = parent.getBoundingClientRect();
+                  if (rect.width < 150 && rect.height < 50) {
+                    parent.style.display = 'none';
+                    parent.style.opacity = '0';
+                    parent.style.visibility = 'hidden';
+                    parent.style.pointerEvents = 'none';
+                  }
                 }
               });
+              
+              // Gezieltere Suche nach Elementen in der unteren rechten Ecke
+              const allElements = iframeDoc.querySelectorAll('*');
+              allElements.forEach(el => {
+                if (el.tagName !== 'CANVAS' && el.tagName !== 'BODY' && el.tagName !== 'HTML') {
+                  const style = window.getComputedStyle(el);
+                  // Gezielter nach kleinen Elementen in der Ecke suchen
+                  if (style.position === 'absolute' && 
+                      style.bottom === '0px' && 
+                      style.right === '0px') {
+                    
+                    const rect = el.getBoundingClientRect();
+                    if (rect.width < 120 && rect.height < 50) {
+                      // Nur kleine Elemente in der Ecke verstecken
+                      el.style.display = 'none';
+                      el.style.opacity = '0';
+                      el.style.visibility = 'hidden';
+                    }
+                  }
+                }
+              });
+              
+              // Try to insert our own covering element - gezielter platzieren
+              try {
+                const canvasContainer = iframeDoc.querySelector('canvas')?.parentElement;
+                if (canvasContainer) {
+                  const coverDiv = iframeDoc.createElement('div');
+                  coverDiv.style.position = 'absolute';
+                  coverDiv.style.bottom = '0';
+                  coverDiv.style.right = '0';
+                  coverDiv.style.width = '100px';
+                  coverDiv.style.height = '40px';
+                  coverDiv.style.backgroundColor = 'black';
+                  coverDiv.style.zIndex = '9999';
+                  coverDiv.style.pointerEvents = 'none';
+                  canvasContainer.appendChild(coverDiv);
+                }
+              } catch (e) {
+                // Ignore errors with manipulating iframe content
+              }
             }
           } catch (e) {
             // Cross-origin iframe access will fail, which is expected
@@ -74,11 +209,11 @@ export function InteractiveRobotSpline({ scene, className }: InteractiveRobotSpl
       }
     };
     
-    // Run on initial mount
-    removeWatermarks();
+    // Run on initial mount with slight delay
+    setTimeout(removeWatermarks, 1000);
     
-    // Then periodically check
-    const intervalId = setInterval(removeWatermarks, 500);
+    // Then periodically check, but with longer interval
+    const intervalId = setInterval(removeWatermarks, 3000);
     
     return () => clearInterval(intervalId);
   }, []);
@@ -88,6 +223,50 @@ export function InteractiveRobotSpline({ scene, className }: InteractiveRobotSpl
     console.log('Spline scene loaded successfully');
     setIsLoading(false);
     setIsLoaded(true);
+    
+    // Direkt nach dem Laden des Modells Wasserzeichen entfernen
+    setTimeout(() => {
+      try {
+        // Nach dem Spline-Container suchen
+        const splineCanvas = containerRef.current?.querySelector('canvas');
+        if (splineCanvas) {
+          // Alle möglichen Wasserzeichen-Elemente durchlaufen
+          const parent = splineCanvas.parentElement;
+          if (parent) {
+            // Alles durchsuchen, was kein Canvas ist
+            Array.from(parent.children).forEach(child => {
+              if (child !== splineCanvas && child.tagName !== 'CANVAS') {
+                // Wenn es ein Link oder ein typisches Wasserzeichen-Element ist
+                if (
+                  child.tagName === 'A' || 
+                  (window.getComputedStyle(child).position === 'absolute' && 
+                   window.getComputedStyle(child).bottom === '0px' && 
+                   window.getComputedStyle(child).right === '0px')
+                ) {
+                  console.log("Removing watermark element after load:", child);
+                  child.style.display = 'none';
+                  child.style.visibility = 'hidden';
+                  child.style.opacity = '0';
+                }
+              }
+            });
+            
+            // Zusätzliches Abdeckungselement zum Canvas-Parent hinzufügen
+            const watermarkCover = document.createElement('div');
+            watermarkCover.style.position = 'absolute';
+            watermarkCover.style.bottom = '0';
+            watermarkCover.style.right = '0';
+            watermarkCover.style.width = '100px';
+            watermarkCover.style.height = '40px';
+            watermarkCover.style.background = 'black';
+            watermarkCover.style.zIndex = '999999';
+            parent.appendChild(watermarkCover);
+          }
+        }
+      } catch (e) {
+        console.log("Error handling watermark after load:", e);
+      }
+    }, 100); // Kurze Verzögerung für bessere Zuverlässigkeit
   };
 
   // Handler für Fehler
@@ -176,17 +355,14 @@ export function InteractiveRobotSpline({ scene, className }: InteractiveRobotSpl
         </Suspense>
       </ErrorBoundary>
       
-      {/* Corner covers to hide the watermark better */}
-      <div className="absolute bottom-0 right-0 w-36 h-14 bg-black z-10 pointer-events-none"></div>
+      {/* Nur minimale diskrete Abdeckung behalten */}
+      <div className="hidden md:block absolute bottom-0 right-0 w-36 h-14 bg-black/90 z-10 pointer-events-none"></div>
       <div 
-        className="absolute bottom-0 right-0 w-48 h-24 pointer-events-none z-20"
+        className="hidden md:block absolute bottom-0 right-0 w-48 h-24 pointer-events-none z-20"
         style={{
           background: 'radial-gradient(circle at bottom right, rgba(0,0,0,1) 50%, rgba(0,0,0,0.7) 70%, rgba(0,0,0,0) 100%)',
         }}
       ></div>
-      
-      {/* Multi-layered approach to combat various watermark placement techniques */}
-      <div className="absolute bottom-5 right-5 w-36 h-10 bg-black/90 z-[1000] pointer-events-none"></div>
     </div>
   );
 } 
