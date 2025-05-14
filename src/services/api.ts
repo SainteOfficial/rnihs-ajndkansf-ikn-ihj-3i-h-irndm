@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Constants for API service
 const OPENROUTER_MODEL = import.meta.env.VITE_OPENROUTER_MODEL || 'deepseek/deepseek-chat-v3-0324:free';
-const ELEVENLABS_VOICE_ID = import.meta.env.VITE_ELEVENLABS_VOICE_ID || 'rAmra0SCIYOxYmRNDSm3';
+const ELEVENLABS_VOICE_ID = import.meta.env.VITE_ELEVENLABS_VOICE_ID || 'UP4e4PjCL00ZZ1e5kvcW';
 
 // Debug-Ausgabe für Umgebungsvariablen
 console.log('ENV Variablen:', {
