@@ -526,6 +526,20 @@ export default function PreLaunch({ onAuthenticate, password }: PreLaunchProps) 
                 zIndex: 20
               }}
             ></div>
+            
+            {/* Direkte mobile Wasserzeichen-Abdeckung */}
+            <div className="md:hidden absolute bottom-0 left-0 right-0 h-12 pointer-events-none z-[9999]"
+              style={{
+                background: 'linear-gradient(to top, rgba(0,0,0,1) 60%, rgba(0,0,0,0.7) 85%, rgba(0,0,0,0) 100%)',
+              }}
+            >
+              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-white/70 text-sm font-medium">
+                KI-HELPBOT.DE
+              </div>
+            </div>
+            
+            {/* Garantierte Abdeckung in der rechten unteren Ecke */}
+            <div className="md:hidden absolute bottom-0 right-0 w-28 h-16 bg-black z-[9999] pointer-events-none"></div>
           </div>
           
           {/* Watermark cover layers - ENHANCED for better coverage but responsive for mobile */}
